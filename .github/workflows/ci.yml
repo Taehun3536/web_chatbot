@@ -30,6 +30,7 @@ jobs:
       with:
         node-version: '20'
         cache: 'npm'
+    # E2E 테스트 시 앱 내의 API 키 체크 로직을 통과하기 위해 가상 환경 변수 파일 생성
     - name: Create .env file for testing
       run: echo "VITE_GEMINI_API_KEY=dummy_api_key_for_testing" > .env
     - name: Install dependencies
