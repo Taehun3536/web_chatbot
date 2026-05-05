@@ -13,27 +13,29 @@ test.describe('Connect AI - 사용자 시나리오 E2E 테스트', () => {
       const userPrompt = requestBody.contents[0].parts[0].text;
 
       // 특정 키워드에 따른 모킹 응답 분기
+      let responseBody;
+      let status = 200;
+
       if (userPrompt === 'TRIGGER_ERROR_429') {
-        await route.fulfill({
-          status: 429,
-          contentType: 'application/json',
-          body: JSON.stringify({ error: { message: 'Quota exceeded' } }),
-        });
+        status = 429;
+        responseBody = { error: { message: 'Quota exceeded' } };
       } else if (userPrompt === 'TRIGGER_ERROR_500') {
-        await route.fulfill({
-          status: 500,
-          contentType: 'application/json',
-          body: JSON.stringify({ error: { message: 'Internal Server Error' } }),
-        });
+        status = 500;
+        responseBody = { error: { message: 'Internal Server Error' } };
       } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            candidates: [{ content: { parts: [{ text: `"${userPrompt}"에 대한 AI의 답변입니다.` }] } }]
-          }),
-        });
+        responseBody = {
+          candidates: [{ content: { parts: [{ text: `"${userPrompt}"에 대한 AI의 답변입니다.` }] } }]
+        };
       }
+
+      // 로딩 상태("생각 중")를 테스트하기 위해 500ms 지연 추가
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      await route.fulfill({
+        status,
+        contentType: 'application/json',
+        body: JSON.stringify(responseBody),
+      });
     });
 
     // 2. 메인 페이지 접속
