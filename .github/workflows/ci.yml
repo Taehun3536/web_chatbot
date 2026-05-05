@@ -23,6 +23,8 @@ jobs:
 
   e2e-test:
     runs-on: ubuntu-latest
+    env:
+      VITE_GEMINI_API_KEY: "dummy_api_key_for_testing"
     steps:
     - uses: actions/checkout@v4
     - name: Set up Node.js
